@@ -1,12 +1,16 @@
 import { useState } from "react";
 // Import the initial friends data
-import { Friends as initialFriends } from "../public/data";
+import { friends as initialFriends } from "../public/data";
 
 function App() {
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [friends, setFriends] = useState(initialFriends); // Use state for friends
   
   function addFriend(name, image) {
+    if(!name || !image){
+      alert("Please fill all the fields!")
+      return
+    }
     const newFriend = {
       id: friends.length + 1, // Automatically increment id
       name: name,
@@ -103,8 +107,12 @@ function FriendForm({ setShowAddFriend, addFriend }) {
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
 
+  function handleSubmit (e){
+    e.preventDefault();
+  }
+
   return (
-    <form className="m-5 border-2 border-blue w-11/12 shadow-sm pl-4 py-5 shadow-black">
+    <form onSubmit={handleSubmit} className="m-5 border-2 border-blue w-11/12 shadow-sm pl-4 py-5 shadow-black">
       <div>
         <label
           htmlFor="name"
