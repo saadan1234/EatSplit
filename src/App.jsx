@@ -29,6 +29,7 @@ function App() {
           friends={friends} // Pass friends state to Profile component
           setShowAddFriend={setShowAddFriend}
           addFriend={addFriend}
+          setFriends={setFriends}
         />
         {showAddFriend && (
           <FriendForm setShowAddFriend={setShowAddFriend} addFriend={addFriend} />
@@ -46,7 +47,26 @@ function Header() {
   );
 }
 
-function Profile({ friends, setShowAddFriend }) {
+function Profile({ friends, setShowAddFriend , setFriends}) {
+
+  function updateSplits(splitter, amount, payer) {
+    if (!splitter || !amount) {
+        alert("Amount and Splitting person cannot be empty!");
+        return; // Stop further execution
+    }
+
+    setFriends(friends.map((friend) => {
+        if (friend.name === splitter) {
+            return { ...friend, balance: friend.balance - parseFloat(amount) };
+        }
+        if (friend.name === payer) {
+            return { ...friend, balance: friend.balance + parseFloat(amount) };
+        }
+        return friend;
+    }));
+}
+
+
   return (
     <>
       <div className="flex">
@@ -84,7 +104,7 @@ function Profile({ friends, setShowAddFriend }) {
           <Button onClick={() => setShowAddFriend(true)}>Add Friend</Button>
         </div>
         <div className="m-2 p-3 ">
-          <SplitForm />
+          <SplitForm updateSplits={updateSplits} />
         </div>
       </div>
     </>
@@ -156,25 +176,39 @@ function FriendForm({ setShowAddFriend, addFriend }) {
   );
 }
 
-function SplitForm({setShowAddFriend}) {
-  return <form className="m-5 shadow-sm p-4 shadow-black">
+function SplitForm({updateSplits}) {
+
+  const [expense, setExpense] = useState();
+  const [splitter, setSplitter] = useState();
+  const [payer, setPayer] = useState();
+  const [amount, setAmount] = useState();
+
+  function handleSubmit(e){
+    e.preventDefault();
+  }
+
+  return <form onSubmit={handleSubmit} className="m-5 shadow-sm p-4 shadow-black">
     <div>
             <label htmlFor="expense" className="m-5 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Total Expense</label>
-            <input type="text" id="expense" className="mx-3 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1000" required />
+            <input  value={expense}
+          onChange={(e) => setExpense(e.target.value)} type="text" id="expense" className="mx-3 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1000" required />
         </div>
         <div>
             <label htmlFor="splitter" className="m-5 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Split with: </label>
-            <input type="text" id="image" className="mx-3 mb-5 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Choose a friend" required />
+            <input  value={splitter}
+          onChange={(e) => setSplitter(e.target.value)} type="text" id="image" className="mx-3 mb-5 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Choose a friend" required />
         </div>
         <div>
             <label htmlFor="amount" className="m-5 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Split Amount</label>
-            <input type="text" id="image" className="mx-3 mb-5 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="image.png" required />
+            <input  value={amount}
+          onChange={(e) => setAmount(e.target.value)} type="text" id="image" className="mx-3 mb-5 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="image.png" required />
         </div>
         <div>
-            <label htmlFor="resturant" className="m-5 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Resturant</label>
-            <input type="text" id="image" className="mx-3 mb-5 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Resturant Name" required />
+            <label htmlFor="resturant" className="m-5 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Payer</label>
+            <input  value={payer}
+          onChange={(e) => setPayer(e.target.value)} type="text" id="image" className="mx-3 mb-5 w-11/12 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Payer" required />
         </div>
-    <Button onClick={()=>setShowAddFriend(false)}>Split</Button>
+    <Button onClick={()=>updateSplits(splitter, amount, payer)}>Split</Button>
   </form>
 }
 
